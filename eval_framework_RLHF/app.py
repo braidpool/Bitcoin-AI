@@ -302,8 +302,12 @@ def run_tests():
             
             # Extract function name from user code (simple heuristic)
             import ast
-            tree = ast.parse("""{user_code}""")
-            function_names = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+            # Parse the already executed user code to get function names
+            import inspect
+            function_names = []
+            for name, obj in globals().items():
+                if inspect.isfunction(obj) and name != 'run_tests':
+                    function_names.append(name)
             
             if function_names:
                 func = globals()[function_names[0]]
